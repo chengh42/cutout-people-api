@@ -7,7 +7,7 @@ const CONFIG = {
     // See https://github.com/jantimon/html-webpack-plugin
     indexHtmlTemplate: './docs/index.html',
     fsharpEntry: './docs/output/App.js',
-    outputDir: './publish/public',
+    outputDir: './publish',
     assetsDir: './docs/public',
     devServerPort: 8080,
     // When using webpack-dev-server, you may need to redirect some calls

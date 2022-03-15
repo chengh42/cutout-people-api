@@ -1,0 +1,33 @@
+name: Deploy docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Setup .NET 5 SDK
+        uses: actions/setup-dotnet@v1.9.0
+        with:
+          dotnet-version: 5.0.100
+
+      - name: Install Tools
+        run: dotnet tool restore
+
+      - name: Bundle web app
+        run: dotnet fable -o output -s --run npm run build
+        working-directory: ./docs
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3.8.0
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages
+          publish_dir: ./publish
