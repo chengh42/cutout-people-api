@@ -1,57 +1,27 @@
-module Server
+module Program
 
-open Fable.Remoting.Server
-open Fable.Remoting.Giraffe
-open Saturn
+open System
+open System.Threading.Tasks
+open GraphQL
+open GraphQL.Types
+open GraphQL.SystemTextJson
 
-open Shared
+type Hello = { Hello: string }
 
-type Storage() =
-    let todos = ResizeArray<_>()
+[<EntryPoint>]
+let main (args: string []) =
+    let schema = Schema.For (@"
+            type Query {
+                hello: String
+            }
+        ")
+    let json =
+        schema.ExecuteAsync(fun opts ->
+            opts.Root <- { Hello = "Hello World" }
+            opts.Query <- "{ hello }")
+        |> Async.AwaitTask
+        |> Async.RunSynchronously
 
-    member __.GetTodos() = List.ofSeq todos
+    Console.WriteLine(json)
 
-    member __.AddTodo(todo: Todo) =
-        if Todo.isValid todo.Description then
-            todos.Add todo
-            Ok()
-        else
-            Error "Invalid todo"
-
-let storage = Storage()
-
-storage.AddTodo(Todo.create "Create new SAFE project")
-|> ignore
-
-storage.AddTodo(Todo.create "Write your app")
-|> ignore
-
-storage.AddTodo(Todo.create "Ship it !!!")
-|> ignore
-
-let todosApi =
-    { getTodos = fun () -> async { return storage.GetTodos() }
-      addTodo =
-          fun todo ->
-              async {
-                  match storage.AddTodo todo with
-                  | Ok () -> return todo
-                  | Error e -> return failwith e
-              } }
-
-let webApp =
-    Remoting.createApi ()
-    |> Remoting.withRouteBuilder Route.builder
-    |> Remoting.fromValue todosApi
-    |> Remoting.buildHttpHandler
-
-let app =
-    application {
-        url "http://0.0.0.0:8085"
-        use_router webApp
-        memory_cache
-        use_static "public"
-        use_gzip
-    }
-
-run app
+    0

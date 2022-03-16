@@ -5,6 +5,7 @@ open Helpers
 
 initializeContext()
 
+let srcPath = Path.getFullName "src"
 let docsPath = Path.getFullName "docs"
 let publishPath = Path.getFullName "publish"
 
@@ -20,6 +21,10 @@ Target.create "Bundle" (fun _ ->
 )
 
 Target.create "Run" (fun _ ->
+    run dotnet "run" srcPath
+)
+
+Target.create "Docs" (fun _ ->
     run dotnet "fable watch -o output -s --run webpack-dev-server" docsPath
 )
 
@@ -36,7 +41,7 @@ let dependencies = [
 
     "Clean"
         ==> "InstallNpm"
-        ==> "Run"
+        ==> "Docs"
 ]
 
 [<EntryPoint>]
