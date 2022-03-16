@@ -21,12 +21,8 @@ jobs:
       - name: Install Tools
         run: dotnet tool restore
 
-      - name: Install npm dependencies
-        run: npm install
-
       - name: Bundle web app
-        run: dotnet fable -o output -s --run npm run build
-        working-directory: ./docs
+        run: dotnet run bundle
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3.8.0

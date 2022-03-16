@@ -3,17 +3,16 @@ module Index
 open Elmish
 open Fable.Remoting.Client
 
-type Todo = { Id: System.Guid; Description: string }
-
-type Model = { Todos: Todo list; Input: string }
+type Model = { Input: string }
 
 type Msg =
     | SetInput of string
 
 let init () : Model * Cmd<Msg> =
-    let model = { Todos = []; Input = "" }
+    let model = { Input = "" }
+    let cmd = Cmd.none
 
-    model, Cmd.none
+    model, cmd
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     match msg with
@@ -25,8 +24,7 @@ open Feliz.Bulma
 let view (model: Model) (dispatch: Msg -> unit) =
     Bulma.hero [
         hero.isFullHeight
-        color.isPrimary
         prop.children [
-            Bulma.text.p "Cutout people"
+            Bulma.title.h3 "Cutout People"
         ]
     ]
